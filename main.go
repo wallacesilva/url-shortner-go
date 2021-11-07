@@ -2,9 +2,9 @@ package main
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wallacesilva/url-shortnet-go/core"
 )
 
 type FormShortUrl struct {
@@ -13,29 +13,6 @@ type FormShortUrl struct {
 
 type UrlShorten struct {
 	Code string `uri:"code" binding:"required"`
-}
-
-// TODO: fix me please
-// var baseUrl string = os.Getenv("BASE_URL")
-
-func getBaseUrl(uri string) string {
-
-	var url string
-	var baseUrl string
-
-	baseUrl = os.Getenv("BASE_URL")
-
-	if baseUrl != "" {
-		url = baseUrl + uri
-	} else {
-		url = "http://0.0.0.0:8080" + uri
-	}
-	return url
-}
-
-// TODO: Add tests
-func getUrlByCode(code string) string {
-	return getBaseUrl("/" + code)
 }
 
 func main() {
@@ -55,7 +32,7 @@ func main() {
 		c.Bind(&form)
 		c.HTML(http.StatusOK, "short.tmpl", gin.H{
 			"title":        projectTitle,
-			"url_short":    getBaseUrl("/xpto"),
+			"url_short":    core.GetBaseUrl("/xpto"),
 			"url_original": form.Url,
 		})
 	})
@@ -68,7 +45,7 @@ func main() {
 		}
 
 		// TODO: redirect to URL unshorten
-		c.JSON(200, gin.H{"code": getUrlByCode(urlShorten.Code)})
+		c.JSON(200, gin.H{"code": core.GetUrlByCode(urlShorten.Code)})
 	})
 
 	r.Run() // listen and serve on 0.0.0.0:8080
